@@ -1,23 +1,37 @@
 #!/bin/bash
 
+if [ ! -f /data/uuid.txt ]; then
+    cat /proc/sys/kernel/random/uuid > /data/uuid.txt
+fi
+
+if [ ! -f /data/serial.txt ]; then
+    printf '%02X%02X%02X%02X%02X%02X\n' $[RANDOM%256] $[RANDOM%256] $[RANDOM%256] $[RANDOM%256] $[RANDOM%256] $[RANDOM%256] > /data/serial.txt
+fi
+
 if [ "$1" == "id" ]; then
+    if [ -n "$2" ]; then
+        if [ -f "$2" ]; then
+            cat "$2"
+            exit 0
+        fi
+        touch $2
+        echo "board.sysid=0xea16" >> "$2" # UNVR4
+        echo "board.uuid=$(cat /data/uuid.txt)" >> "$2"
+        echo "board.name=UniFi Network Video Recorder" >> "$2"
+        echo "board.shortname=UNVR" >> "$2"
+        echo "board.hwrev=1" >> "$2"
+        echo "board.serialno=$(cat /data/serial.txt)" >> "$2"
 
-    if [ ! -f /data/uuid.txt ]; then
-        cat /proc/sys/kernel/random/uuid > /data/uuid.txt
     fi
-    uuid=$(cat /data/uuid.txt)
-
-    # echo "board.sysid=0xb719" # UVC_NVR
-    # echo "board.sysid=0xe970" # UCK_G2_PLUS
-    # echo "board.sysid=0xea13" # UDM_SE
-    # echo "board.sysid=0xea15" # UDM_PRO
     echo "board.sysid=0xea16" # UNVR4
-    # echo "board.sysid=0xea1a" # UNVR4
-    # echo "board.sysid=0xea20" # UNVR_PRO
-    # echo "board.sysid=0xffff" # MAC_OS
-
-    echo "board.uuid=$uuid"
+    echo "board.uuid=$(cat /data/uuid.txt)"
     echo "board.name=UniFi Network Video Recorder"
     echo "board.shortname=UNVR"
     echo "board.hwrev=1"
+    echo "board.serialno=$(cat /data/serial.txt)"
+
+elif [ "$1" == "uuid" ]; then
+    cat /data/uuid.txt
+else
+    echo "Unknown ubnt-tools cmd: $@" >> /tmp/ubnt-tools-unknown.log
 fi

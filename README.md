@@ -20,7 +20,7 @@ docker run -d --name unifi-protect-arm64  \
     markdegroot/unifi-protect-arm64:latest
 ```
 
-Now you can access UniFi Protect at `https://localhost/`.
+Now you can access UniFi Protect at `https://localhost/`. Note that to use newer versions of docker changes are needed to use cgroups v1. Because of this, it is HIGHLY RECOMMENDED to use podman instead as it does not have the same issues Docker does. More details on how to configure docker for cgroups v1 can be found [Here](https://github.com/moby/moby/issues/42275#issuecomment-1115041405)
 
 ## Storage
 UniFi Protect needs a lot of storage to record video. Protect will fail to start if there is not at least 100GB disk space available, so make sure to store your Docker volumes on a disk with some space (`/storage` in the above run command).
@@ -36,3 +36,8 @@ docker build -t markdegroot/unifi-protect-arm64 .
 
 ## Disclaimer
 This Docker image is not associated with UniFi in any way. We do not distribute any third party software and only use packages that are freely available on the internet.
+
+## TO-DO
+    ustorage
+    ustorage config show
+    /usr/bin/sudo -n /sbin/mdadm --detail /dev/md3 ?

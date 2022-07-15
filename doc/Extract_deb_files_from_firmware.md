@@ -13,4 +13,6 @@ dpkg-query --admindir=_fwupdate.bin.extracted/squashfs-root/var/lib/dpkg/ -W -f=
 while read pkg; do
   dpkg-repack --root=_fwupdate.bin.extracted/squashfs-root/ --arch=arm64 ${pkg}
 done < packages.txt
+
+cp _fwupdate.bin.extracted/squashfs-root/usr/lib/version ./
 ```
