@@ -38,28 +38,35 @@ STOPSIGNAL SIGKILL
 RUN apt-get update \
     && apt-get -y --no-install-recommends install postgresql \
     && sed -i 's/peer/trust/g' /etc/postgresql/9.6/main/pg_hba.conf \
+    && sudo apt-get clean \
+    && sudo apt-get autoclean \
+    && sudo apt-get purge \
+    && sudo apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
-COPY put-deb-files-here/*.deb files/postgresql.sh /
-COPY put-version-file-here/version /usr/lib/version
+COPY tempdir/preserve/*.deb src/postgresql.sh /
+COPY tempdir/preserve/version /usr/lib/version
 
-RUN apt-get -y --no-install-recommends install /ubnt-archive-keyring_*_arm64.deb \
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y --no-install-recommends install /ubnt-archive-keyring_*_arm64.deb \
     && echo 'deb https://apt.artifacts.ui.com stretch main release' > /etc/apt/sources.list.d/ubiquiti.list \
     && chmod 666 /etc/apt/sources.list.d/ubiquiti.list \
     && apt-get update \
     && apt-get -y --no-install-recommends install /*.deb node12 \
     && rm -f /*.deb \
     && rm -rf /var/lib/apt/lists/* \
+    && echo "CLUSTER_PORT=5432" >> /etc/default/postgresql/9.6-main \
     && /postgresql.sh \
     && rm /postgresql.sh \
     && echo "exit 0" > /usr/sbin/policy-rc.d \
-    && sed -i "s/Requires=network.target postgresql-cluster@9.6-main.service ulp-go.service/Requires=network.target postgresql-cluster@9.6-main.service/" /lib/systemd/system/unifi-core.service \
     && sed -i 's/redirectHostname: unifi//' /usr/share/unifi-core/app/config/config.yaml \
     && sed -i 's|echo "$1" > /etc/hostname|#echo "$1" > /etc/hostname|g' /sbin/ubnt-systool \
     && sed -i 's|echo "$1" > /proc/sys/kernel/hostname|#echo "$1" > /proc/sys/kernel/hostname|g' /sbin/ubnt-systool \
-    && echo "unifi-protect ALL=SETENV: NOPASSWD:$(grep 'node/v12' /usr/bin/node12 | awk '{ print $4 }')" > /etc/sudoers.d/unifi-protect-node12
+    && echo "unifi-protect ALL=SETENV: NOPASSWD:$(grep 'node/v12' /usr/bin/node12 | awk '{ print $4 }')" > /etc/sudoers.d/unifi-protect-node12 \
+    && sed -i "s|WatchdogSec=120|WatchdogSec=480|g " /lib/systemd/system/unifi-protect.service
 
-COPY files/ubnt-tools /sbin/ubnt-tools
+COPY src/ubnt-tools /sbin/ubnt-tools
+COPY src/ustorage /sbin/ustorage
 
 VOLUME ["/srv", "/data"]
 

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ "$1" == "config" ]; then
+    if [ "$2" == "show" ]; then
+        echo '{"hotspare": false, "raid": "raid1"}'
+    fi
+elif [ "$1" == "disk" ]; then
+    if [ "$2" == "inspect" ]; then
+        echo '[{"action": "none", "ata": "ACS-4", "bad_sector": 0, "estimate": null, "firmware": null, "healthy": "good", "life_span": null, "model": null, "poweronhrs": 0, "progress": null, "reason": null, "rpm": 7200, "sata": "SATA 3.3", "serial": null, "size": null, "slot": 1, "state": "normal", "temperature": null, "threshold": 10, "type": "HDD"}]'
+    fi
+elif [ "$1" == "space" ]; then
+    if [ "$2" == "inspect" ]; then
+        echo '[]'
+    fi
+elif [ -z ${1+x} ]; then
+    echo "ustorage copycat"
+else
+    echo "Unknown ustorage cmd: $@" >> /tmp/ustorage-unknown.log
+fi

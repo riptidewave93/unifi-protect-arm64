@@ -29,9 +29,10 @@ if [ "$1" == "id" ]; then
     echo "board.shortname=UNVR"
     echo "board.hwrev=1"
     echo "board.serialno=$(cat /data/serial.txt)"
-
 elif [ "$1" == "uuid" ]; then
     cat /data/uuid.txt
+elif [ -z ${1+x} ]; then
+    echo "ubnt-tools copycat"
 else
     echo "Unknown ubnt-tools cmd: $@" >> /tmp/ubnt-tools-unknown.log
 fi
