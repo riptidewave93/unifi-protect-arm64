@@ -11,9 +11,9 @@ if [ "$1" == "system" ]; then
         # Now that services are stopped, nuke ALL THE THINGS
         rm -rf /srv/*
         rm -rf /persistent/*
-        rm -rf /data/ulp-go /data/unifi-core # Preserve UUID/Serial files/postgres
+        rm -rf /data/unifi-core # Only reset the core
         # And now bring things back
-        for service in unifi-protect unifi-core unifi-pion-gw ulp-go "postgresql@9.6-main" "postgresql@9.6-protect"; do
+        for service in "postgresql@9.6-protect" "postgresql@9.6-main" ulp-go unifi-pion-gw unifi-core unifi-protect; do
             systemctl start $service
         done
     fi
