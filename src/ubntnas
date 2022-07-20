@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ "$1" == "system" ]; then
+    if [ "$2" == "reset" ]; then
+        # For science
+        ulp reset
+        # Stop all unifi processes
+        for service in unifi-protect unifi-core unifi-pion-gw ulp-go "postgresql@9.6-main" "postgresql@9.6-protect"; do
+            systemctl stop $service
+        done
+        # Now that services are stopped, nuke ALL THE THINGS
+        rm -rf /srv/*
+        rm -rf /persistent/*
+        rm -rf /data/ulp-go /data/unifi-core # Preserve UUID/Serial files/postgres
+        # And now bring things back
+        for service in unifi-protect unifi-core unifi-pion-gw ulp-go "postgresql@9.6-main" "postgresql@9.6-protect"; do
+            systemctl start $service
+        done
+    fi
+elif [ -z ${1+x} ]; then
+    echo "ubntnas copycat"
+else
+    echo "Unknown ubntnas cmd: $@" >> /tmp/ubntnas-unknown.log
+fi

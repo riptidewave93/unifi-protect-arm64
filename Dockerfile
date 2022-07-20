@@ -67,6 +67,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 COPY src/ubnt-tools /sbin/ubnt-tools
 COPY src/ustorage /sbin/ustorage
+COPY src/ubntnas /sbin/ubntnas
 
 VOLUME ["/srv", "/data"]
 
